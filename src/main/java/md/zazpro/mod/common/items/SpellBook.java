@@ -12,12 +12,13 @@
 package md.zazpro.mod.common.items;
 
 import md.zazpro.mod.client.CreativeTab;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -45,9 +46,8 @@ public class SpellBook extends Item {
 //Change this to make the item not stay in the crafting grid
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
-        list.add(I18n.translateToLocal("tooltip.items.Pigman"));
+    public void addInformation(ItemStack itemStack, World worldIn, java.util.List list, ITooltipFlag tooltipFlag) {
+        list.add(I18n.format("tooltip.items.Pigman"));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SpellBook extends Item {
     public void onKill(LivingDropsEvent event) {
         if (event.getEntity() instanceof EntityPigZombie) {
             if (randInt(1, 20) == 1)
-                event.getDrops().add(new EntityItem(event.getEntity().worldObj, event.getEntity().posX,
+                event.getDrops().add(new EntityItem(event.getEntity().world, event.getEntity().posX,
                         event.getEntity().posY, event.getEntity().posZ, new ItemStack(ItemsAndUpgrades.Spell_Book)));
         }
     }

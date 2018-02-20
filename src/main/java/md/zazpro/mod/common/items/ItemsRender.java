@@ -13,7 +13,6 @@ package md.zazpro.mod.common.items;
 
 import md.zazpro.mod.client.ModInfo;
 import md.zazpro.mod.common.baubles.base.GlobalBaubleMesh;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -27,7 +26,7 @@ public class ItemsRender {
     public static final String[] Charm_CoreVariants = {"Charm_Core.DEFAULT", "Charm_Core.WINGS"};
     public static final String[] Head_CoreVariants = {"Head_Core.DEFAULT", "Head_Core.PERL", "Head_Core.DIAMOND", "Head_Core.EMERALD"};
 
-    public static void registerRenders() {
+    public static void registerModels() {
         reg(ItemsAndUpgrades.Spell_Book);
         reg(ItemsAndUpgrades.Translator);
         reg(ItemsAndUpgrades.Broken_Translator);
@@ -77,6 +76,9 @@ public class ItemsRender {
         reg(ItemsAndUpgrades.Upgrade_Harvest);
         reg(ItemsAndUpgrades.Upgrade_Repair);
         reg(ItemsAndUpgrades.Upgrade_Vampire);
+        reg(ItemsAndUpgrades.ItemBlockBookGenerator);
+        reg(ItemsAndUpgrades.ItemBlockExpGenerator);
+        reg(ItemsAndUpgrades.ItemBlockUpgradeExtractor);
     }
 
     public static void renderPreInit() {
@@ -89,8 +91,7 @@ public class ItemsRender {
     }
 
     private static void reg(Item item) {
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(
-                ModInfo.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+    	ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(ModInfo.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
     }
 
     private static void addItemRender(Item item) {

@@ -20,9 +20,13 @@ import md.zazpro.mod.helper.Wrapper;
 import md.zazpro.mod.helper.ring.RingUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -31,7 +35,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.MinecraftForge;
@@ -66,47 +69,46 @@ public class Ring_Core extends BaubleBSUContainer {
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
+    public void addInformation(ItemStack itemStack, World worldIn, java.util.List<String> list, ITooltipFlag p_77624_4_) {
 
         list.add(TextFormatting.GOLD + (this.getBSUStored(itemStack) + "/" + this.getMaxBSUStored(itemStack) + " BSU"));
-        list.add(I18n.translateToLocal("tooltip.shift"));
+        list.add(I18n.format("tooltip.shift"));
 
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            list.add(TextFormatting.RED + I18n.translateToLocal("tooltip.ring.warning"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.Invisibility"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.NightVision"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.Haste"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.Power"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.FastGrowth"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.Harvest"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.ring.Repair"));
+            list.add(TextFormatting.RED + I18n.format("tooltip.ring.warning"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.Invisibility"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.NightVision"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.Haste"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.Power"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.FastGrowth"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.Harvest"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.ring.Repair"));
         } else if (itemStack.getTagCompound() != null) {
             Boolean invisibility = itemStack.getTagCompound().getBoolean("Invisibility");
             if (invisibility)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.Invisibility"));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.Invisibility"));
             Boolean nightVision = itemStack.getTagCompound().getBoolean("NightVision");
-            if (nightVision) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.NightVision"));
+            if (nightVision) list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.NightVision"));
             Float haste = itemStack.getTagCompound().getFloat("Haste");
             if (haste > 0)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.HasteLVL") + ": +" + Math.round(haste));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.HasteLVL") + ": +" + Math.round(haste));
             Integer power = itemStack.getTagCompound().getInteger("Power");
             if (power > 0)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.PowerLVL") + ": +" + power);
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.PowerLVL") + ": +" + power);
             Boolean Growth = itemStack.getTagCompound().getBoolean("Growth");
-            if (Growth) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.FastGrowth"));
+            if (Growth) list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.FastGrowth"));
             Boolean Harvest = itemStack.getTagCompound().getBoolean("Harvest");
-            if (Harvest) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.Harvest"));
+            if (Harvest) list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.Harvest"));
             Boolean Repair = itemStack.getTagCompound().getBoolean("Repair");
-            if (Repair) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.ring.Repair"));
+            if (Repair) list.add(TextFormatting.AQUA + I18n.format("tooltip.ring.Repair"));
         }
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void clientTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getMinecraft().thePlayer != null && Wrapper.INSTANCE.world() != null && checkForNightVision) {
-            EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        if (Minecraft.getMinecraft().player != null && Wrapper.INSTANCE.world() != null && checkForNightVision) {
+            EntityPlayer player = Minecraft.getMinecraft().player;
             ItemStack itemStack1 = BaublesApi.getBaublesHandler(player).getStackInSlot(1);
             ItemStack itemStack2 = BaublesApi.getBaublesHandler(player).getStackInSlot(2);
             if (RingUtils.isLegalb(itemStack1, itemStack2, "NightVision") && NightVision == false) {
@@ -121,7 +123,7 @@ public class Ring_Core extends BaubleBSUContainer {
                     NightVision = true;
                 }
             } else if (!RingUtils.isLegalb(itemStack1, itemStack2, "NightVision") && NightVision) {
-                Wrapper.INSTANCE.world().provider.registerWorld(Wrapper.INSTANCE.world());
+                Wrapper.INSTANCE.world().provider.setWorld(Wrapper.INSTANCE.world());
                 NightVision = false;
             }
         }
@@ -141,11 +143,12 @@ public class Ring_Core extends BaubleBSUContainer {
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase e) {
         if (itemStack.getTagCompound() != null) {
+        	this.setBSUStored(itemStack, this.getMaxBSUStored(itemStack));
             if (e instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) e;
                 ItemStack itemStack1 = BaublesApi.getBaublesHandler(player).getStackInSlot(1);
                 ItemStack itemStack2 = BaublesApi.getBaublesHandler(player).getStackInSlot(2);
-                World world = player.worldObj;
+                World world = player.world;
 
                 if (RingUtils.isLegalb(itemStack1, itemStack2, "Invisibility")) {
                     ItemStack itemStack3 = RingUtils.getStackFromBoolean(itemStack1, itemStack2, "Invisibility");
@@ -180,12 +183,11 @@ public class Ring_Core extends BaubleBSUContainer {
                 if (RingUtils.isLegalb(itemStack1, itemStack2, "Repair")) {
                     ItemStack itemStack3 = RingUtils.getStackFromBoolean(itemStack1, itemStack2, "Repair");
                     if (this.getBSUStored(itemStack3) >= ConfigurationHandler.Ring_REPAIR) {
-                        if (player.ticksExisted % COST_INTERVAL == 0)
+                        if (player.ticksExisted % 5 == 0)
                             this.extractBSU(itemStack3, ConfigurationHandler.Ring_REPAIR, false);
                         RepairItem(player, world);
                     }
                 }
-
             }
         }
     }
@@ -240,53 +242,73 @@ public class Ring_Core extends BaubleBSUContainer {
 
     private void RepairItem(EntityPlayer player, World world) {
         if (!world.isRemote) {
-            if (world.rand.nextInt(ConfigurationHandler.RepairChance) == 0) {
-                IInventory inv = player.inventory;
+        	IInventory inv = player.inventory;
+        	for (int i = 0; i < inv.getSizeInventory(); i++) {
+        		ItemStack invStack = inv.getStackInSlot(i);
+        		
+        		if (invStack.getTagCompound() != null && invStack.getTagCompound().getTag("TinkerData") != null) {
+        			invStack.setItemDamage(0);
+        			continue;
+        		}
 
-                for (int i = 0; i < inv.getSizeInventory(); i++) {
-                    ItemStack invStack = inv.getStackInSlot(i);
-
-                    if (invStack == null || !invStack.getItem().isRepairable()) {
-                        continue;
-                    }
-                    if (invStack.equals(player.getHeldItemMainhand()) && player.isSwingInProgress) {
+        		if (invStack.isEmpty() || !invStack.getItem().isRepairable()) {
+        			continue;
+        		}
+        		/*if (invStack.equals(player.getHeldItemMainhand()) && player.isSwingInProgress) {
                         continue;
                     }
                     if (invStack.equals(player.getHeldItemOffhand()) && player.isSwingInProgress) {
                         continue;
-                    }
-                    if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0) {
-                        invStack.setItemDamage(invStack.getItemDamage() - 1);
-                    }
-                }
+                    }*/
+        		if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0) {
+        			invStack.setItemDamage(0);
+        		}
             }
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBreaking(PlayerEvent.BreakSpeed event) {
-        if (event.getEntityLiving() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-            ItemStack itemStack = player.getHeldItemMainhand();
-            ItemStack itemStack1 = BaublesApi.getBaublesHandler(player).getStackInSlot(1);
-            ItemStack itemStack2 = BaublesApi.getBaublesHandler(player).getStackInSlot(2);
+    	
+    	EntityPlayer player =  event.getEntityPlayer();
+    	ItemStack itemStack = player.getHeldItemMainhand();
+    	ItemStack itemStack1 = BaublesApi.getBaublesHandler(player).getStackInSlot(1);
+    	ItemStack itemStack2 = BaublesApi.getBaublesHandler(player).getStackInSlot(2);
+    	
+    	if (!itemStack.isEmpty() && RingUtils.isLegalf(itemStack1, itemStack2, "Haste"))
+    	{
+    		ItemStack itemStack3 = RingUtils.getStackFromBoolean(itemStack1, itemStack2, "Haste");
+    		if (this.getBSUStored(itemStack3) >= ConfigurationHandler.Ring_HASTE)
+    		{
+    			this.extractBSU(itemStack3, ConfigurationHandler.Ring_HASTE, false);
+    			
+    			float haste = RingUtils.getFloatFromBauble(itemStack1, itemStack2, "Haste");
+    			float f = event.getOriginalSpeed();
+    			
+    			if (player.isInsideOfMaterial(Material.WATER) && !EnchantmentHelper.getAquaAffinityModifier(player))
+    	        {
+    	            f *= 5.0F;
+    	        }
 
-            if (itemStack != null && RingUtils.isLegalf(itemStack1, itemStack2, "Haste")) {
-                ItemStack itemStack3 = RingUtils.getStackFromBoolean(itemStack1, itemStack2, "Haste");
-                if (this.getBSUStored(itemStack3) >= ConfigurationHandler.Ring_HASTE) {
-                    this.extractBSU(itemStack3, ConfigurationHandler.Ring_HASTE, false);
-                    float haste = RingUtils.getFloatFromBauble(itemStack1, itemStack2, "Haste");
-                    float f = event.getOriginalSpeed() + haste;
-                    event.setNewSpeed(f);
-                }
-            }
-        }
+    	        if (!player.onGround)
+    	        {
+    	            f *= 5.0F;
+    	        }
+    			
+    			if (player.world.getTileEntity(event.getPos()) != null)
+    			{
+    				haste /= 5;
+    			}
+    			
+    			event.setNewSpeed(f + haste);
+    		}
+    	}
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onHurt(LivingHurtEvent event) {
-        if (event.getSource().getEntity() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.getSource().getEntity();
+        if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getSource().getImmediateSource();
             ItemStack itemStack1 = BaublesApi.getBaublesHandler(player).getStackInSlot(1);
             ItemStack itemStack2 = BaublesApi.getBaublesHandler(player).getStackInSlot(2);
             if (RingUtils.isLegali(itemStack1, itemStack2, "Power")) {
@@ -325,7 +347,7 @@ public class Ring_Core extends BaubleBSUContainer {
     // This is a fun method which allows us to run some code when our item is
     // shown in a creative tab.
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List itemList)
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> itemList)
     {
         ItemStack itemStack = new ItemStack(item);
         this.setBSUStored(itemStack, 0);

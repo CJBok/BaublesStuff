@@ -13,12 +13,13 @@ package md.zazpro.mod.common.items;
 
 import md.zazpro.mod.client.CreativeTab;
 import md.zazpro.mod.common.config.ConfigurationHandler;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,10 +45,11 @@ public class Translator extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
-        list.add(I18n.translateToLocal("tooltip.items.Pigman"));
-        list.add(I18n.translateToLocal("tooltip.translator.uses") + ": 16");
+    public void addInformation(ItemStack itemStack, World worldIn, java.util.List list, ITooltipFlag p_77624_4_) {
+    	list.add("Uses Left: " + (itemStack.getMaxDamage() - itemStack.getItemDamage()));
+        list.add(I18n.format("tooltip.items.Pigman"));
+        list.add(I18n.format("tooltip.translator.uses")  + ": 16");
+        
     }
 
     @Override
@@ -55,7 +57,7 @@ public class Translator extends Item {
         if (itemStack.getItemDamage() < (itemStack.getMaxDamage() - 2)) {
             ItemStack stack = itemStack.copy();
             stack.setItemDamage(stack.getItemDamage() + 1);
-            stack.stackSize = 1;
+            stack.setCount(1);
             return stack;
         } else return new ItemStack(ItemsAndUpgrades.Broken_Translator);
     }
@@ -74,7 +76,7 @@ public class Translator extends Item {
     public void onKill(LivingDropsEvent event) {
         if (event.getEntity() instanceof EntityPigZombie) {
             if (randInt(1, ConfigurationHandler.TranslatorChance) == 1)
-                event.getDrops().add(new EntityItem(event.getEntity().worldObj, event.getEntity().posX,
+                event.getDrops().add(new EntityItem(event.getEntity().world, event.getEntity().posX,
                         event.getEntity().posY, event.getEntity().posZ, new ItemStack(ItemsAndUpgrades.Translator)));
         }
     }

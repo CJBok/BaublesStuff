@@ -20,6 +20,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.Constants;
@@ -104,11 +106,11 @@ public class RecipeRingCore implements IRecipe {
                         }
 
                         if (currentStack.getItem() == ItemsAndUpgrades.Ring_Core && currentStack2.getItem() == ItemsAndUpgrades.Upgrade_HasteII && currentStack != null && currentStack.hasTagCompound()) {
-                            currentStack.getTagCompound().setFloat("Haste", 10);
+                            currentStack.getTagCompound().setFloat("Haste", 20);
                         }
 
                         if (currentStack.getItem() == ItemsAndUpgrades.Ring_Core && currentStack2.getItem() == ItemsAndUpgrades.Upgrade_HasteIII && currentStack != null && currentStack.hasTagCompound()) {
-                            currentStack.getTagCompound().setFloat("Haste", 20);
+                            currentStack.getTagCompound().setFloat("Haste", 50);
                         }
 
                         if (currentStack.getItem() == ItemsAndUpgrades.Ring_Core && currentStack2.getItem() == ItemsAndUpgrades.Upgrade_PowerI && currentStack != null && currentStack.hasTagCompound()) {
@@ -116,11 +118,11 @@ public class RecipeRingCore implements IRecipe {
                         }
 
                         if (currentStack.getItem() == ItemsAndUpgrades.Ring_Core && currentStack2.getItem() == ItemsAndUpgrades.Upgrade_PowerII && currentStack != null && currentStack.hasTagCompound()) {
-                            currentStack.getTagCompound().setInteger("Power", 5);
+                            currentStack.getTagCompound().setInteger("Power", 10);
                         }
 
                         if (currentStack.getItem() == ItemsAndUpgrades.Ring_Core && currentStack2.getItem() == ItemsAndUpgrades.Upgrade_PowerIII && currentStack != null && currentStack.hasTagCompound()) {
-                            currentStack.getTagCompound().setInteger("Power", 10);
+                            currentStack.getTagCompound().setInteger("Power", 20);
                         }
 
                     }
@@ -131,25 +133,40 @@ public class RecipeRingCore implements IRecipe {
             for (int i = 0; i < inventory.getSizeInventory(); i++)
                 if (inventory.getStackInSlot(i) != null && !(inventory.getStackInSlot(i).getItem() instanceof Ring_Core)) {
                     ItemStack is1 = inventory.getStackInSlot(i).copy();
-                    is1.stackSize = 1;
+                    is1.setCount(1);
                     addItemStackToBauble(currentStack, is1);
                 }
         return currentStack;
     }
 
     @Override
-    public int getRecipeSize() {
-        return 9;
-    }
-
-    @Override
     public ItemStack getRecipeOutput() {
-        return null;
+        return new ItemStack(ItemsAndUpgrades.Ring_Core);
     }
 
     @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
+
+	@Override
+	public IRecipe setRegistryName(ResourceLocation name) {
+		return null;
+	}
+
+	@Override
+	public ResourceLocation getRegistryName() {
+		return new ResourceLocation("RecipeRingCore");
+	}
+
+	@Override
+	public Class<IRecipe> getRegistryType() {
+		return null;
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		return true;
+	}
 
 }

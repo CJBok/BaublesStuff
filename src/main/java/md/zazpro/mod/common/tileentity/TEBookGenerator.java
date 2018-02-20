@@ -18,7 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
 
 import javax.annotation.Nullable;
 
@@ -45,19 +45,19 @@ public class TEBookGenerator extends TileEntity implements IInventory {
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        if (this.getStackInSlot(index) != null) {
-            ItemStack itemstack;
+        if (this.getStackInSlot(index) != ItemStack.EMPTY) {
+            ItemStack itemstack = ItemStack.EMPTY;
 
-            if (this.getStackInSlot(index).stackSize <= count) {
+            if (this.getStackInSlot(index).getCount() <= count) {
                 itemstack = this.getStackInSlot(index);
-                this.setInventorySlotContents(index, null);
+                this.setInventorySlotContents(index, ItemStack.EMPTY);
                 this.markDirty();
                 return itemstack;
             } else {
                 itemstack = this.getStackInSlot(index).splitStack(count);
 
-                if (this.getStackInSlot(index).stackSize <= 0) {
-                    this.setInventorySlotContents(index, null);
+                if (this.getStackInSlot(index).getCount() <= 0) {
+                    this.setInventorySlotContents(index, ItemStack.EMPTY);
                 } else {
                     //Just to show that changes happened
                     this.setInventorySlotContents(index, this.getStackInSlot(index));
@@ -67,14 +67,14 @@ public class TEBookGenerator extends TileEntity implements IInventory {
                 return itemstack;
             }
         } else {
-            return null;
+            return ItemStack.EMPTY;
         }
     }
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
         ItemStack stack = this.getStackInSlot(index);
-        this.setInventorySlotContents(index, null);
+        this.setInventorySlotContents(index, ItemStack.EMPTY);
         return stack;
     }
 
@@ -83,10 +83,10 @@ public class TEBookGenerator extends TileEntity implements IInventory {
         if (index < 0 || index >= this.getSizeInventory())
             return;
 
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
-            stack.stackSize = this.getInventoryStackLimit();
+        if (stack != ItemStack.EMPTY && stack.getCount() > this.getInventoryStackLimit())
+            stack.setCount(this.getInventoryStackLimit());
 
-        if (stack != null && stack.stackSize == 0)
+        if (stack != ItemStack.EMPTY && stack.getCount() == 0)
             stack = null;
 
         this.inventory[index] = stack;
@@ -99,8 +99,8 @@ public class TEBookGenerator extends TileEntity implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
-        return this.worldObj.getTileEntity(this.getPos()) == this && player.getDistanceSq(this.pos.add(0.5, 0.5, 0.5)) <= 64;
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return this.world.getTileEntity(this.getPos()) == this && player.getDistanceSq(this.pos.add(0.5, 0.5, 0.5)) <= 64;
     }
 
     @Override
@@ -156,7 +156,7 @@ public class TEBookGenerator extends TileEntity implements IInventory {
 
     @Override
     public ITextComponent getDisplayName() {
-        return ITextComponent.Serializer.fromJsonLenient(this.hasCustomName() ? (this.getName()) : I18n.translateToLocal(this.getName()));
+        return ITextComponent.Serializer.fromJsonLenient(this.hasCustomName() ? (this.getName()) : I18n.format(this.getName()));
     }
 
     @Override
@@ -189,10 +189,15 @@ public class TEBookGenerator extends TileEntity implements IInventory {
         for (int i = 0; i < list.tagCount(); ++i) {
             NBTTagCompound stackTag = list.getCompoundTagAt(i);
             int slot = stackTag.getByte("Slot") & 255;
-            this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
+            this.setInventorySlotContents(slot, new ItemStack(stackTag));
         }
         if (nbt.hasKey("CustomName", 8)) {
             this.setCustomName(nbt.getString("CustomName"));
         }
     }
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
 }

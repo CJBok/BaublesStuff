@@ -13,9 +13,10 @@ package md.zazpro.mod.common.items;
 
 import md.zazpro.mod.client.CreativeTab;
 import md.zazpro.mod.interfaces.IUpgrade;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ItemUpgrade extends Item implements IUpgrade {
     public Object s;
@@ -38,8 +39,8 @@ public class ItemUpgrade extends Item implements IUpgrade {
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
+    public void addInformation(ItemStack itemStack, World worldIn,
+                               java.util.List list, ITooltipFlag p_77624_4_) {
         if (s!=null)
         list.add(s);
     }

@@ -98,8 +98,8 @@ public abstract class BaubleBSUContainer extends BaubleBase implements IBSUConta
         int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
 
         if (!simulate) {
-            energy -= energyExtracted;
-            container.getTagCompound().setInteger("BSU", energy);
+            //energy -= energyExtracted;
+            //container.getTagCompound().setInteger("BSU", energy);
         }
         return energyExtracted;
     }

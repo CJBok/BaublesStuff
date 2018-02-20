@@ -1,13 +1,13 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "textures": {
-        "0": "baublesstuff:blocks/BlockBookGenerator/1",
-        "1": "baublesstuff:blocks/BlockBookGenerator/3",
-        "2": "baublesstuff:blocks/BlockBookGenerator/2",
-        "3": "baublesstuff:blocks/BlockBookGenerator/4",
-        "4": "baublesstuff:blocks/BlockBookGenerator/4",
-        "5": "baublesstuff:blocks/BlockBookGenerator/books2",
-		"particle": "baublesstuff:blocks/BlockBookGenerator/books2"
+        "0": "baublesstuff:blocks/bookgenerator/1",
+        "1": "baublesstuff:blocks/bookgenerator/3",
+        "2": "baublesstuff:blocks/bookgenerator/2",
+        "3": "baublesstuff:blocks/bookgenerator/4",
+        "4": "baublesstuff:blocks/bookgenerator/4",
+        "5": "baublesstuff:blocks/bookgenerator/books2",
+		"particle": "baublesstuff:blocks/bookgenerator/books2"
     },
     "elements": [
         {

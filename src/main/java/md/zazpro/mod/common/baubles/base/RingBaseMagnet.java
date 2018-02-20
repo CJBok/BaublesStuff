@@ -14,37 +14,37 @@ package md.zazpro.mod.common.baubles.base;
 import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class RingBaseMagnet extends BaubleBase {
 
-    public static final List<String> BLACKLIST = Arrays.asList("appliedenergistics2:item.ItemCrystalSeed");
-
-    private int range;
+    public int range;
 
     public RingBaseMagnet(String name, int range) {
         super(name);
         MinecraftForge.EVENT_BUS.register(this);
         this.range = range;
     }
-
-    public static void addItemToBlackList(String item) {
-        BLACKLIST.add(item);
+    
+    @Override
+    public void addInformation(ItemStack itemStack, World worldIn, java.util.List<String> list, ITooltipFlag flag) {
+    	
+    	if (itemStack.getTagCompound() != null && itemStack.getTagCompound().getBoolean("active")) {
+    		list.add("Active");
+    	}
+    	
     }
 
     public static int getCooldown(ItemStack itemStack) {
@@ -77,30 +77,20 @@ public abstract class RingBaseMagnet extends BaubleBase {
         if (par1ItemStack.getTagCompound() == null) {
             par1ItemStack.setTagCompound(new NBTTagCompound());
             par1ItemStack.getTagCompound().setInteger("cooldown", 0);
+            par1ItemStack.getTagCompound().setBoolean("active", true);
         }
     }
 
 
-    public List getEntitiesInRange(Class entityType, World world, EntityPlayer player) {
-        return world.getEntitiesWithinAABB(entityType, new AxisAlignedBB(player.posX - this.range, player.posY - this.range, player.posZ - this.range, player.posX + this.range, player.posY + this.range, player.posZ + this.range));
-    }
-
-    public boolean isItemInRangeOfNegator(World world, EntityItem item) {
-        int x = MathHelper.floor_double(item.posX);
-        int y = MathHelper.floor_double(item.posY);
-        int z = MathHelper.floor_double(item.posZ);
-        int range = 16;
-        for (int x2 = x - range; x2 < x + range; x2++) {
-            for (int z2 = z - range; z2 < z + range; z2++) {
-                for (int y2 = y - range; y2 < y + range; y2++) {
-                    ItemStack itemStack = item.getEntityItem();
-                    if (itemStack == null || BLACKLIST.contains(Item.REGISTRY.getNameForObject(itemStack.getItem()).toString())) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    public List<Entity> getEntitiesInRange(Class<? extends Entity> entityType, World world, EntityPlayer player) {
+        return world.getEntitiesWithinAABB(entityType, 
+        		new AxisAlignedBB(player.posX - this.range, 
+        						  player.posY - this.range, 
+        						  player.posZ - this.range, 
+        						  player.posX + this.range, 
+        						  player.posY + this.range, 
+        						  player.posZ + this.range)
+        		);
     }
 
     @SubscribeEvent
@@ -113,5 +103,4 @@ public abstract class RingBaseMagnet extends BaubleBase {
             }
         }
     }
-
 }

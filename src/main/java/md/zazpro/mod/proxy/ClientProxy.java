@@ -11,10 +11,9 @@
 
 package md.zazpro.mod.proxy;
 
+import md.zazpro.mod.client.events.KeyHandler;
 import md.zazpro.mod.common.blocks.BlockRegister;
-import md.zazpro.mod.common.items.ItemsAndUpgrades;
 import md.zazpro.mod.common.items.ItemsRender;
-import md.zazpro.mod.helper.UpdateHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -27,19 +26,22 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         ItemsRender.renderPreInit();
+        MinecraftForge.EVENT_BUS.register(new KeyHandler());
     }
 
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-        ItemsRender.registerRenders();
         BlockRegister.registerRenders();
-
     }
 
     @Override
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
-        MinecraftForge.EVENT_BUS.register(new UpdateHandler());
+    }
+    
+    @Override
+    public void registerModels() {
+    	ItemsRender.registerModels();
     }
 }

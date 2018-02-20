@@ -10,24 +10,25 @@
  */
 
 package md.zazpro.mod.common.achievements;
-
+/*
 import md.zazpro.mod.common.blocks.BlockRegister;
 import md.zazpro.mod.common.items.ItemsAndUpgrades;
 import net.minecraft.stats.Achievement;
-import net.minecraftforge.common.AchievementPage;
+import net.minecraft.stats.StatBase;
+import net.minecraftforge.common.AchievementPage;*/
 
 public class BaublesStuffAchievement {
-    public static Achievement installMod;
-    public static Achievement craftBelt, craftPendant, craftRing, craftMagnetRing, craftNotLMagnetRing;
-    public static Achievement craftHighStep, craftSpeedI, craftSpeedII, craftSpeedIII, craftJumpI, craftJumpII, craftJumpIII, craftFly;
-    public static Achievement craftFireImmune, craftFallImmune, craftWitherImmune, craftWaterBreathing, craftHealthRegen, craftVampire;
-    public static Achievement craftInvisibility, craftGrowth, craftHarvest, craftRepair, craftNightVision, craftHasteI, craftHasteII, craftHasteIII, craftPowerI, craftPowerII, craftPowerIII;
-    public static Achievement craftExtractor;
+    /*public static StatBase installMod;
+    public static StatBase craftBelt, craftPendant, craftRing, craftMagnetRing, craftNotLMagnetRing;
+    public static StatBase craftHighStep, craftSpeedI, craftSpeedII, craftSpeedIII, craftJumpI, craftJumpII, craftJumpIII, craftFly;
+    public static StatBase craftFireImmune, craftFallImmune, craftWitherImmune, craftWaterBreathing, craftHealthRegen, craftVampire;
+    public static StatBase craftInvisibility, craftGrowth, craftHarvest, craftRepair, craftNightVision, craftHasteI, craftHasteII, craftHasteIII, craftPowerI, craftPowerII, craftPowerIII;
+    public static StatBase craftExtractor;
 
     public static AchievementPage BaublesAchievementPage;
 
     public static void loadAchievements() {
-        installMod = new Achievement("achievement.bs_install", "bs_install", 0, 0, ItemsAndUpgrades.Upgrade_Stone, null).setSpecial().registerStat();
+        installMod = new StatBase("achievement.bs_install", "bs_install", 0, 0, ItemsAndUpgrades.Upgrade_Stone, null).setSpecial().registerStat();
 
         craftExtractor = new Achievement("achievement.bs_craftExtractor", "bs_craftExtractor", -6, -4, BlockRegister.UpgradeExtractor, null).setSpecial().registerStat();
 
@@ -77,7 +78,7 @@ public class BaublesStuffAchievement {
 
     public static void registerPage() {
         AchievementPage.registerAchievementPage(BaublesAchievementPage);
-    }
+    }*/
 
 
 }

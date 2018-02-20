@@ -21,5 +21,6 @@ public class PacketHandler {
 
     public static void preInit() {
         INSTANCE.registerMessage(MessageGenerator.class, MessageGenerator.class, ID++, Side.CLIENT);
+        INSTANCE.registerMessage(MessageMagnetToggle.class, MessageMagnetToggle.class, ID++, Side.SERVER);
     }
 }

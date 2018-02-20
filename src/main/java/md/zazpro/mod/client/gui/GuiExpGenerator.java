@@ -56,8 +56,8 @@ public class GuiExpGenerator extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String s = (String.valueOf(this.expGen.getLvlStored()));
-        this.fontRendererObj.drawString(s, 89 - this.fontRendererObj.getStringWidth(s) / 2, 13, 16248327);            //#404040
-        this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 4210752);      //#404040
+        this.fontRenderer.drawString(s, 89 - this.fontRenderer.getStringWidth(s) / 2, 13, 16248327);            //#404040
+        this.fontRenderer.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 4210752);      //#404040
 
         int x = mouseX - guiLeft;
         int y = mouseY - guiTop;
@@ -71,7 +71,7 @@ public class GuiExpGenerator extends GuiContainer {
         List<String> text = new ArrayList<String>();
         text.add(this.getOverlayText());
 
-        GuiUtils.drawHoveringText(text, mouseX, mouseY, mc.displayWidth, mc.displayHeight, -1, mc.fontRendererObj);
+        GuiUtils.drawHoveringText(text, mouseX, mouseY, mc.displayWidth, mc.displayHeight, -1, mc.fontRenderer);
 
     }
 

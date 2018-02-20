@@ -22,7 +22,7 @@ public class Wrapper {
     }
 
     public WorldClient world() {
-        return Minecraft.getMinecraft().theWorld;
+        return Minecraft.getMinecraft().world;
     }
 
 }

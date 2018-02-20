@@ -20,11 +20,12 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class AchievementEvents {
-
+/*
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event) {
         EntityPlayer player = event.player;
         player.addStat(BaublesStuffAchievement.installMod, 1);
+        player.addStat
     }
 
     @SubscribeEvent
@@ -125,5 +126,5 @@ public class AchievementEvents {
         if (event.crafting.getItem() == ItemsAndUpgrades.Upgrade_Repair) {
             event.player.addStat(BaublesStuffAchievement.craftRepair, 1);
         }
-    }
+    }*/
 }

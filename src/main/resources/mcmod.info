@@ -12,7 +12,7 @@
 "logoFile": "assets/baublesstuff/textures/logo.png",
 "screenshots": [], 
 "parent":"", 
-"requiredMods": [ "Baubles" ],
-"dependencies": [ "Baubles" ]
+"requiredMods": [ "baubles" ],
+"dependencies": [ "baubles" ]
 
 }]

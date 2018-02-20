@@ -21,6 +21,7 @@ import md.zazpro.mod.common.energy.BaubleBSUContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +29,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -47,7 +49,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
 
     private static final int COST_INTERVAL = 20;
     private static final ResourceLocation texture = new ResourceLocation("baublesstuff:textures/model/Belt_Core.png");
-    public static List<String> playersWith1Step = new ArrayList();
+    public static List<String> playersWith1Step = new ArrayList<String>();
     @SideOnly(Side.CLIENT)
     private static ModelBiped model;
 
@@ -63,34 +65,36 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
+    public void addInformation(ItemStack itemStack, World worldIn, java.util.List<String> list, ITooltipFlag p_77624_4_) {
 
         list.add(TextFormatting.GOLD + (this.getBSUStored(itemStack) + "/" + this.getMaxBSUStored(itemStack) + " BSU"));
-        list.add(I18n.translateToLocal("tooltip.shift"));
+        list.add(I18n.format("tooltip.shift"));
 
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.belt.HighStep"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.belt.Speed"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.belt.Jump"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.belt.Fly"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.belt.HighStep"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.belt.Speed"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.belt.Jump"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.belt.Fly"));
         } else if (itemStack.getTagCompound() != null) {
             Boolean highStep = itemStack.getTagCompound().getBoolean("highStep");
-            if (highStep) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.belt.HighStep"));
+            if (highStep) list.add(TextFormatting.AQUA + I18n.format("tooltip.belt.HighStep"));
             Integer speed = itemStack.getTagCompound().getInteger("speed");
             if (speed > 0)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.belt.SpeedLVL") + ": " + speed);
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.belt.SpeedLVL") + ": " + speed);
             float jump = itemStack.getTagCompound().getFloat("jump");
             if (jump > 0)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.belt.JumpLVL") + ": " + (Math.round(jump * 10) - 1));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.belt.JumpLVL") + ": " + (Math.round(jump * 10) - 1));
             Boolean fly = itemStack.getTagCompound().getBoolean("fly");
-            if (fly) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.belt.Fly"));
+            if (fly) list.add(TextFormatting.AQUA + I18n.format("tooltip.belt.Fly"));
         }
     }
 
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase e) {
+    	
         if (itemStack.getTagCompound() != null) {
+        	
+        	this.setBSUStored(itemStack, this.getMaxBSUStored(itemStack));
 
             Boolean stepHeight = itemStack.getTagCompound().getBoolean("highStep");
             Integer speed = itemStack.getTagCompound().getInteger("speed");
@@ -99,20 +103,20 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
 
             if (e instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) e;
+                
                 if (speed > 0 && player.moveForward > 0F) {
                     if (this.getBSUStored(itemStack) >= ConfigurationHandler.Belt_SPEED) {
                         if (player.ticksExisted % COST_INTERVAL == 0)
                             this.extractBSU(itemStack, ConfigurationHandler.Belt_SPEED, false);
-                        player.moveRelative(0F, 1F, player.capabilities.isFlying ? 0.030F : (speed * 0.05F));
+                        player.moveRelative(0F, 0F, player.capabilities.isFlying ? 0.030F : (speed * 0.05F), 1F);
                     }
                 }
 
                 if (stepHeight) {
-                    if (player.worldObj.isRemote) {
-                        if (player.ticksExisted % COST_INTERVAL == 0 && this.getBSUStored(itemStack) >= ConfigurationHandler.Belt_STEP && !player.isSneaking()) {
-                            this.extractBSU(itemStack, ConfigurationHandler.Belt_STEP, false);
+                    if (player.world.isRemote) {
+                        if (!player.isSneaking()) {
                             player.stepHeight = 1F;
-                        } else if (player.isSneaking())
+                        } else
                             player.stepHeight = 0.5F;
                     }
                 }
@@ -180,7 +184,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
             player.capabilities.allowFlying = false;
             player.capabilities.isFlying = false;
         }
-        if (player.worldObj.isRemote) {
+        if (player.world.isRemote) {
             player.capabilities.setPlayerWalkSpeed(0.1F);
             player.capabilities.setFlySpeed(0.05F);
         }
@@ -196,7 +200,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
     public void onPlayerLoggedInEvent(PlayerLoggedInEvent event) {
         if (event.player != null) {
 
-            if (!event.player.worldObj.isRemote) {
+            if (!event.player.world.isRemote) {
                 EntityPlayer entityPlayer = event.player;
                 IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(entityPlayer);
 
@@ -216,7 +220,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
     public void onPlayerLoggedInEvent(PlayerChangedDimensionEvent event) {
         if (event.player != null) {
 
-            if (!event.player.worldObj.isRemote) {
+            if (!event.player.world.isRemote) {
                 EntityPlayer entityPlayer = event.player;
                 IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(entityPlayer);
 
@@ -234,7 +238,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onLivingUpdate(LivingUpdateEvent event) {
-        if (event.getEntityLiving() instanceof EntityPlayer && event.getEntityLiving().worldObj.isRemote) {
+        if (event.getEntityLiving() instanceof EntityPlayer && event.getEntityLiving().world.isRemote) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
 
@@ -259,7 +263,7 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
     // This is a fun method which allows us to run some code when our item is
     // shown in a creative tab.
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List itemList) {
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> itemList) {
         ItemStack itemStack = new ItemStack(item);
         this.setBSUStored(itemStack, 0);
         itemList.add(itemStack);
@@ -279,10 +283,11 @@ public class Belt_Core extends BaubleBSUContainer implements IRenderBauble {
 
             float s = 1.05F / 16F;
             GlStateManager.scale(s, s, s);
+            
             if (model == null)
                 model = new ModelBiped();
 
-            model.bipedBody.render(1F);
+            model.bipedBody.render(1.0F);
         }
     }
 

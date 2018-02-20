@@ -30,31 +30,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockExpGenerator extends BlockContainer {
-    private boolean isExpGenerator;
-
     protected BlockExpGenerator() {
         super(Material.ROCK);
-        this.setUnlocalizedName("BlockExpGenerator");
-        this.setRegistryName("BlockExpGenerator");
         this.setCreativeTab(CreativeTab.tabBaublesStuff);
         this.setHardness(1.0F);
     }
-
+    
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing par6, float par7, float par8, float par9) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing par6, float par7, float par8, float par9) {
         if (!world.isRemote) {
-            if (this.isExpGenerator) {
-                TEExpGenerator test = (TEExpGenerator) world.getTileEntity(pos);
-                if (test != null) {
-                    player.openGui(BaublesStuff.instance, BSGuiHandler.EXP_GEN_TILE_ENTITY_GUI, world, pos.getX(), pos.getY(), pos.getZ());
-                }
-            } else {
-                TEExpGenerator test = (TEExpGenerator) world.getTileEntity(pos);
-                if (test != null) {
-                    player.openGui(BaublesStuff.instance, BSGuiHandler.EXP_GEN_TILE_ENTITY_GUI, world, pos.getX(), pos.getY(), pos.getZ());
-                }
-            }
-            return true;
+            player.openGui(BaublesStuff.instance, BSGuiHandler.EXP_GEN_TILE_ENTITY_GUI, world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
@@ -66,7 +51,6 @@ public class BlockExpGenerator extends BlockContainer {
         InventoryHelper.dropInventoryItems(world, pos, te);
         super.breakBlock(world, pos, blockstate);
     }
-
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {

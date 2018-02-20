@@ -40,7 +40,7 @@ public class Head_Core extends BaubleBase {
     // This is a fun method which allows us to run some code when our item is
     // shown in a creative tab.
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List itemList) {
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> itemList) {
         for (int i = 0; i < Head_CoreVariants.length; i++) {
             ItemStack itemStack = new ItemStack(item);
             itemStack.setTagCompound(new NBTTagCompound());

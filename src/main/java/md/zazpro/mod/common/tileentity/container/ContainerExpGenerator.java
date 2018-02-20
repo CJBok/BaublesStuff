@@ -62,7 +62,7 @@ public class ContainerExpGenerator extends Container {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int fromSlot) {
-        ItemStack previous = null;
+        ItemStack previous = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(fromSlot);
 
         if (slot != null && slot.getHasStack()) {
@@ -72,21 +72,21 @@ public class ContainerExpGenerator extends Container {
             if (fromSlot < 1) {
                 // From TE Inventory to Player Inventory
                 if (!this.mergeItemStack(current, 2, 6, true))
-                    return null;
+                    return ItemStack.EMPTY;
             } else {
                 // From Player Inventory to TE Inventory
                 if (!this.mergeItemStack(current, 0, 1, false))
-                    return null;
+                    return ItemStack.EMPTY;
             }
 
-            if (current.stackSize == 0)
-                slot.putStack(null);
+            if (current.getCount() == 0)
+                slot.putStack(ItemStack.EMPTY);
             else
                 slot.onSlotChanged();
 
-            if (current.stackSize == previous.stackSize)
-                return null;
-            slot.onPickupFromSlot(playerIn, current);
+            if (current.getCount() == previous.getCount())
+                return ItemStack.EMPTY;
+            slot.onTake(playerIn, current);
         }
         return previous;
     }
@@ -104,7 +104,7 @@ public class ContainerExpGenerator extends Container {
         }
 
         this.bsu = this.te.getField(0);
-        this.lvl = this.te.getField(0);
+        this.lvl = this.te.getField(1);
     }
 
     @SideOnly(Side.CLIENT)
@@ -114,6 +114,6 @@ public class ContainerExpGenerator extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
-        return te.isUseableByPlayer(playerIn);
+        return te.isUsableByPlayer(playerIn);
     }
 }

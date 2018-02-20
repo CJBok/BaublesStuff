@@ -32,20 +32,20 @@ public class RingUtils {
     public static boolean isLegalf(ItemStack is1, ItemStack is2, String tag) {
         Item item1 = null;
         Item item2 = null;
-        if (is1 != null)
+        if (!is1.isEmpty())
             item1 = is1.getItem();
-        if (is2 != null)
+        if (!is2.isEmpty())
             item2 = is2.getItem();
-        return ((is1 != null && item1 == ItemsAndUpgrades.Ring_Core && is1.getTagCompound() != null && (is1.getTagCompound().getFloat(tag) > 0))
-                || (is2 != null && item2 == ItemsAndUpgrades.Ring_Core && is2.getTagCompound() != null && (is2.getTagCompound().getFloat(tag) > 0)))
+        return ((!is1.isEmpty() && item1 == ItemsAndUpgrades.Ring_Core && is1.getTagCompound() != null && (is1.getTagCompound().getFloat(tag) > 0))
+                || (!is2.isEmpty() && item2 == ItemsAndUpgrades.Ring_Core && is2.getTagCompound() != null && (is2.getTagCompound().getFloat(tag) > 0)))
                 && (item1 != item2);
     }
 
     public static float getFloatFromBauble(ItemStack is1, ItemStack is2, String tag) {
         float f = 0;
-        if (is1 != null && is1.getTagCompound().getFloat(tag) > 0)
+        if (!is1.isEmpty() && is1.getTagCompound().getFloat(tag) > 0)
             f = is1.getTagCompound().getFloat(tag);
-        else if (is2 != null && is2.getTagCompound().getFloat(tag) > 0)
+        else if (!is2.isEmpty() && is2.getTagCompound().getFloat(tag) > 0)
             f = is2.getTagCompound().getFloat(tag);
 
         return f;
@@ -75,9 +75,9 @@ public class RingUtils {
 
     public static ItemStack getStackFromBoolean(ItemStack is1, ItemStack is2, String tag) {
         ItemStack itemStack = null;
-        if (is1 != null && is1.hasTagCompound() && is1.getTagCompound().getBoolean(tag))
+        if (!is1.isEmpty() && is1.hasTagCompound() && is1.getTagCompound().getBoolean(tag))
             itemStack = is1;
-        else if (is2 != null && is2.hasTagCompound() && is2.getTagCompound().getBoolean(tag))
+        else if (!is2.isEmpty() && is2.hasTagCompound() && is2.getTagCompound().getBoolean(tag))
             itemStack = is2;
         return itemStack;
     }

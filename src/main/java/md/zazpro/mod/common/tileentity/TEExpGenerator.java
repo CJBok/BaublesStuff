@@ -20,37 +20,36 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TEExpGenerator extends TileBSUHandler implements IInventory, ITickable {
     public int lvl;
-    private int bsu;
     private int maxBSU = 1000000;
-    private ItemStack[] inventory;
+    private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(9, ItemStack.EMPTY);
     private String customName;
 
     public TEExpGenerator() {
-        this.inventory = new ItemStack[this.getSizeInventory()];
         storage.setCapacity(maxBSU);
     }
 
     @Override
     public void update() {
-        if (!this.worldObj.isRemote) {
+        if (!this.world.isRemote) {
             if (storage.getBSUStored() <= storage.getMaxBSUStored()) {
                 storage.modifyBSUStored(storage.receiveBSU((int) Math.round((lvl * ConfigurationHandler.TEExpGenRate)), false));
                 this.markDirty();
             }
-            if (this.validateItem(this.getStackInSlot(0)) && this.getStackInSlot(1) == null) {
+            if (this.validateItem(this.getStackInSlot(0)) && this.getStackInSlot(1) == ItemStack.EMPTY) {
                 BaubleBSUContainer item = ((BaubleBSUContainer) this.getStackInSlot(0).getItem());
                 storage.modifyBSUStored(-storage.extractBSU(item.getMaxBSUTransfer(this.getStackInSlot(0)), false));
                 item.receiveBSU(this.getStackInSlot(0), item.getMaxBSUTransfer(this.getStackInSlot(0)), false);
                 if (item.getBSUStored(this.getStackInSlot(0)) == item.getMaxBSUStored(this.getStackInSlot(0))) {
                     this.setInventorySlotContents(1, this.getStackInSlot(0));
-                    this.setInventorySlotContents(0, null);
+                    this.setInventorySlotContents(0, ItemStack.EMPTY);
                 }
                 this.markDirty();
             }
@@ -58,7 +57,7 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
     }
 
     public boolean validateItem(ItemStack itemStack) {
-        if (itemStack != null && itemStack.getItem() instanceof BaubleBSUContainer) {
+        if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BaubleBSUContainer) {
             BaubleBSUContainer item = (BaubleBSUContainer) itemStack.getItem();
             if (item.getBSUStored(itemStack) < item.getMaxBSUStored(itemStack))
                 return true;
@@ -84,7 +83,7 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
 
     @Override
     public ITextComponent getDisplayName() {
-        return ITextComponent.Serializer.fromJsonLenient(this.hasCustomName() ? (this.getName()) : I18n.translateToLocal(this.getName()));
+        return ITextComponent.Serializer.fromJsonLenient(this.hasCustomName() ? (this.getName()) : I18n.format(this.getName()));
     }
 
     @SideOnly(Side.CLIENT)
@@ -120,25 +119,24 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
     @Override
     public ItemStack getStackInSlot(int index) {
         if (index < 0 || index >= this.getSizeInventory())
-            return null;
-        return this.inventory[index];
+            return ItemStack.EMPTY;
+        return this.inventory.get(index);
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        if (this.getStackInSlot(index) != null) {
-            ItemStack itemstack;
-
-            if (this.getStackInSlot(index).stackSize <= count) {
+    	ItemStack itemstack = ItemStack.EMPTY;
+        if (this.getStackInSlot(index) != ItemStack.EMPTY) {
+            if (this.getStackInSlot(index).getCount() <= count) {
                 itemstack = this.getStackInSlot(index);
-                this.setInventorySlotContents(index, null);
+                this.setInventorySlotContents(index, ItemStack.EMPTY);
                 this.markDirty();
                 return itemstack;
             } else {
                 itemstack = this.getStackInSlot(index).splitStack(count);
 
-                if (this.getStackInSlot(index).stackSize <= 0) {
-                    this.setInventorySlotContents(index, null);
+                if (this.getStackInSlot(index).getCount()  <= 0) {
+                    this.setInventorySlotContents(index, ItemStack.EMPTY);
                 } else {
                     //Just to show that changes happened
                     this.setInventorySlotContents(index, this.getStackInSlot(index));
@@ -148,14 +146,14 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
                 return itemstack;
             }
         } else {
-            return null;
+            return itemstack;
         }
     }
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
         ItemStack stack = this.getStackInSlot(index);
-        this.setInventorySlotContents(index, null);
+        this.setInventorySlotContents(index, ItemStack.EMPTY);
         return stack;
     }
 
@@ -164,13 +162,13 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
         if (index < 0 || index >= this.getSizeInventory())
             return;
 
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
-            stack.stackSize = this.getInventoryStackLimit();
+        if (stack != ItemStack.EMPTY && stack.getCount() > this.getInventoryStackLimit())
+            stack.setCount(this.getInventoryStackLimit());
 
-        if (stack != null && stack.stackSize == 0)
-            stack = null;
+        if (stack != ItemStack.EMPTY && stack.getCount() == 0)
+            stack = ItemStack.EMPTY;
 
-        this.inventory[index] = stack;
+        this.inventory.set(index, stack);
         this.markDirty();
     }
 
@@ -180,8 +178,8 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
-        return this.worldObj.getTileEntity(this.getPos()) == this && player.getDistanceSq(this.pos.add(0.5, 0.5, 0.5)) <= 64;
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return this.world.getTileEntity(this.getPos()) == this && player.getDistanceSq(this.pos.add(0.5, 0.5, 0.5)) <= 64;
     }
 
     @Override
@@ -219,7 +217,7 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
     @Override
     public void clear() {
         for (int i = 0; i < this.getSizeInventory(); i++)
-            this.setInventorySlotContents(i, null);
+            this.setInventorySlotContents(i, ItemStack.EMPTY);
     }
 
     @Override
@@ -228,7 +226,7 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
 
         NBTTagList list = new NBTTagList();
         for (int i = 0; i < this.getSizeInventory(); ++i) {
-            if (this.getStackInSlot(i) != null) {
+            if (this.getStackInSlot(i) != ItemStack.EMPTY) {
                 NBTTagCompound stackTag = new NBTTagCompound();
                 stackTag.setByte("Slot", (byte) i);
                 this.getStackInSlot(i).writeToNBT(stackTag);
@@ -253,7 +251,7 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
         for (int i = 0; i < list.tagCount(); ++i) {
             NBTTagCompound stackTag = list.getCompoundTagAt(i);
             int slot = stackTag.getByte("Slot") & 255;
-            this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
+            this.setInventorySlotContents(slot, new ItemStack(stackTag));
         }
         this.lvl = nbt.getInteger("LVL");
         if (nbt.hasKey("CustomName", 8)) {
@@ -264,10 +262,15 @@ public class TEExpGenerator extends TileBSUHandler implements IInventory, ITicka
     public void setField(int id, int value) {
         switch (id) {
             case 0:
-                this.bsu = value;
+                //this.bsu = value;
             case 1:
                 this.lvl = value;
                 break;
         }
     }
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
 }

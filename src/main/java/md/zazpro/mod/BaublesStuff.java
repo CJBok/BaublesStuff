@@ -14,7 +14,6 @@ package md.zazpro.mod;
 import md.zazpro.mod.client.CreativeTab;
 import md.zazpro.mod.client.ModInfo;
 import md.zazpro.mod.common.achievements.AchievementEvents;
-import md.zazpro.mod.common.achievements.BaublesStuffAchievement;
 import md.zazpro.mod.common.blocks.BlockRegister;
 import md.zazpro.mod.common.config.ConfigurationHandler;
 import md.zazpro.mod.common.items.ItemsAndUpgrades;
@@ -26,9 +25,13 @@ import md.zazpro.mod.common.recipe.RecipeRingCore;
 import md.zazpro.mod.common.tileentity.TEBookGenerator;
 import md.zazpro.mod.common.tileentity.TEExpGenerator;
 import md.zazpro.mod.common.tileentity.TEExtractor;
-import md.zazpro.mod.common.village.VillageStuff;
+import md.zazpro.mod.integration.ModUtils;
 import md.zazpro.mod.proxy.CommonProxy;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -36,11 +39,10 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.RecipeSorter;
-import net.minecraftforge.oredict.RecipeSorter.Category;
 
-@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, name = ModInfo.NAME, guiFactory = ModInfo.GUI_FACTORY_CLASS, updateJSON = ModInfo.UPDATE_LINK, dependencies = "required-after:Baubles;")
+@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, name = ModInfo.NAME, guiFactory = ModInfo.GUI_FACTORY_CLASS, updateJSON = ModInfo.UPDATE_LINK, dependencies = "required-after:baubles;after:botania")
 public class BaublesStuff {
 
     //Mod Instance
@@ -56,37 +58,31 @@ public class BaublesStuff {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+    	
+    	//Configs
+        ConfigurationHandler.loadConfig(event.getSuggestedConfigurationFile());
+        
         //Mod detection
+        ModUtils.Botania = Loader.isModLoaded("botania");
 
         //Network
         PacketHandler.preInit();
 
-        //Blocks
-        BlockRegister.init();
-
         //Creative Tab
         CreativeTab.TabRegister();
-
-        //Configs
-        ConfigurationHandler.loadConfig(event.getSuggestedConfigurationFile());
-
-        //Item Registration/Initialization
-        ItemsAndUpgrades.init();
-        ItemsAndUpgrades.registerItems();
+        
+        //Events Register
+    	MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new AchievementEvents());
+        MinecraftForge.EVENT_BUS.register(new ItemsAndUpgrades());
+        MinecraftForge.EVENT_BUS.register(new BlockRegister());
 
         //Achievements
-        BaublesStuffAchievement.loadAchievements();
-        BaublesStuffAchievement.registerPage();
-
-        //Loot
-        //TODO, change gen.
-        //ChestGenHooks.getInfo(ChestGenHooks.PYRAMID_DESERT_CHEST).addItem(new WeightedRandomChestContent(new ItemStack(ItemsAndUpgrades.Spell_Book),1,1,10));
+        //BaublesStuffAchievement.loadAchievements();
+        //BaublesStuffAchievement.registerPage();
 
         //Recipes
         CommonRecipes.register();
-
-        //Village
-        VillageStuff.preInit();
 
         //Proxy preInit
         proxy.preInit(event);
@@ -99,19 +95,8 @@ public class BaublesStuff {
         GameRegistry.registerTileEntity(TEExpGenerator.class, "tileEntityExpGenerator");
         GameRegistry.registerTileEntity(TEBookGenerator.class, "tileEntityBookGenerator");
 
-        //Achievement Events Register
-        MinecraftForge.EVENT_BUS.register(new AchievementEvents());
-
         //Proxy init
         proxy.init(event);
-
-        //Craft Recipes
-        GameRegistry.addRecipe(new RecipeBeltCore());
-        RecipeSorter.register("BaubleStuff:Belt", RecipeBeltCore.class, Category.SHAPELESS, "after:minecraft:shapeless");
-        GameRegistry.addRecipe(new RecipePendantCore());
-        RecipeSorter.register("BaubleStuff:Pendant", RecipePendantCore.class, Category.SHAPELESS, "after:minecraft:shapeless");
-        GameRegistry.addRecipe(new RecipeRingCore());
-        RecipeSorter.register("BaubleStuff:Ring", RecipeRingCore.class, Category.SHAPELESS, "after:minecraft:shapeless");
 
         System.out.println("Baubles Stuff here :3");
     }
@@ -119,5 +104,17 @@ public class BaublesStuff {
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
+    }
+    
+    @SubscribeEvent
+    public void models(ModelRegistryEvent event) {
+        proxy.registerModels();
+    }
+    
+    @SubscribeEvent
+    public void models(RegistryEvent.Register<IRecipe> event) {
+        event.getRegistry().register(new RecipeBeltCore());
+        event.getRegistry().register(new RecipePendantCore());
+        event.getRegistry().register(new RecipeRingCore());
     }
 }

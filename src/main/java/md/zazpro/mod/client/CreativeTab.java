@@ -11,10 +11,8 @@
 
 package md.zazpro.mod.client;
 
-import md.zazpro.mod.common.energy.BaubleBSUContainer;
 import md.zazpro.mod.common.items.ItemsAndUpgrades;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,16 +23,15 @@ public class CreativeTab {
 
         @Override
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem() {
-            return ItemsAndUpgrades.Pendant_Core;
+        public ItemStack getTabIconItem() {
+            return new ItemStack(ItemsAndUpgrades.Upgrade_Stone);
         }
 
         @Override
         @SideOnly(Side.CLIENT)
         public ItemStack getIconItemStack() {
             if (itemStack == null) {
-                itemStack = new ItemStack(ItemsAndUpgrades.Pendant_Core);
-                ((BaubleBSUContainer)ItemsAndUpgrades.Pendant_Core).setBSUStored(itemStack,((BaubleBSUContainer) itemStack.getItem()).getMaxBSUStored(itemStack));
+                itemStack = new ItemStack(ItemsAndUpgrades.Upgrade_Stone);
             }
             return itemStack;
         }

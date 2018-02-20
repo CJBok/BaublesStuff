@@ -14,7 +14,9 @@ package md.zazpro.mod.common.baubles.base;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.cap.IBaublesItemHandler;
+import md.zazpro.mod.BaublesStuff;
 import md.zazpro.mod.client.CreativeTab;
+import md.zazpro.mod.client.gui.BSGuiHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -47,16 +49,23 @@ public abstract class BaubleBase extends Item implements IBauble {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    	ItemStack itemStack = player.getHeldItem(hand);
+    	
         if (!world.isRemote) {
-            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(entityPlayer);
+        	
+        	if (player.isSneaking()) {
+        		//player.openGui(BaublesStuff.instance, BSGuiHandler.BAUBLE_ITEM_GUI, world, 0, 0, 0);
+        	}
+        	
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < baubles.getSlots(); i++)
-                if (baubles.getStackInSlot(i) == null && baubles.isItemValidForSlot(i, itemStack, entityPlayer)) {
+                if (baubles.getStackInSlot(i) == null && baubles.isItemValidForSlot(i, itemStack, player)) {
                     baubles.setStackInSlot(i, itemStack.copy());
-                    if (!entityPlayer.capabilities.isCreativeMode) {
-                        entityPlayer.inventory.setInventorySlotContents(entityPlayer.inventory.currentItem, null);
+                    if (!player.capabilities.isCreativeMode) {
+                    	player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                     }
-                    onEquipped(itemStack, entityPlayer);
+                    onEquipped(itemStack, player);
                     break;
                 }
         }

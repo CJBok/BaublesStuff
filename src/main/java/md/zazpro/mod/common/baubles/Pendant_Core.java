@@ -17,6 +17,7 @@ import md.zazpro.mod.client.CreativeTab;
 import md.zazpro.mod.common.config.ConfigurationHandler;
 import md.zazpro.mod.common.energy.BaubleBSUContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,7 +26,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -59,35 +61,35 @@ public class Pendant_Core extends BaubleBSUContainer {
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player,
-                               java.util.List list, boolean p_77624_4_) {
+    public void addInformation(ItemStack itemStack, World worldIn,
+                               java.util.List<String> list, ITooltipFlag p_77624_4_) {
 
         list.add(TextFormatting.GOLD + (this.getBSUStored(itemStack) + "/" + this.getMaxBSUStored(itemStack) + " BSU"));
-        list.add(I18n.translateToLocal("tooltip.shift"));
+        list.add(I18n.format("tooltip.shift"));
 
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.FireIm"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.FallIm"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.WitherIm"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.WaterBreath"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.HealthRegen"));
-            list.add(TextFormatting.WHITE + I18n.translateToLocal("tooltip.pendant.Vampire"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.FireIm"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.FallIm"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.WitherIm"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.WaterBreath"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.HealthRegen"));
+            list.add(TextFormatting.WHITE + I18n.format("tooltip.pendant.Vampire"));
         } else if (itemStack.getTagCompound() != null) {
             Boolean FireImmune = itemStack.getTagCompound().getBoolean("FireImmune");
-            if (FireImmune) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.FireIm"));
+            if (FireImmune) list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.FireIm"));
             Boolean FallImmune = itemStack.getTagCompound().getBoolean("FallImmune");
-            if (FallImmune) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.FallIm"));
+            if (FallImmune) list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.FallIm"));
             Boolean WitherImmune = itemStack.getTagCompound().getBoolean("WitherImmune");
-            if (WitherImmune) list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.WitherIm"));
+            if (WitherImmune) list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.WitherIm"));
             Boolean WaterBreathing = itemStack.getTagCompound().getBoolean("WaterBreathing");
             if (WaterBreathing)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.WaterBreath"));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.WaterBreath"));
             Boolean HealthRegen = itemStack.getTagCompound().getBoolean("HealthRegen");
             if (HealthRegen)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.HealthRegen"));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.HealthRegen"));
             Boolean Vampire = itemStack.getTagCompound().getBoolean("Vampire");
             if (Vampire)
-                list.add(TextFormatting.AQUA + I18n.translateToLocal("tooltip.pendant.Vampire"));
+                list.add(TextFormatting.AQUA + I18n.format("tooltip.pendant.Vampire"));
         }
 
     }
@@ -104,6 +106,7 @@ public class Pendant_Core extends BaubleBSUContainer {
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase e) {
         if (itemStack.getTagCompound() != null) {
+        	this.setBSUStored(itemStack, this.getMaxBSUStored(itemStack));
             if (e instanceof EntityPlayer) {
                 int cooldown = getCooldown(itemStack);
                 Boolean FireImmune = itemStack.getTagCompound().getBoolean("FireImmune");
@@ -155,8 +158,8 @@ public class Pendant_Core extends BaubleBSUContainer {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onHurt(LivingHurtEvent event) {
-        if (event.getSource().getEntity() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.getSource().getEntity();
+        if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getSource().getImmediateSource();
             ItemStack itemStack = null;
             if (BaublesApi.getBaublesHandler(player).getStackInSlot(0) != null && BaublesApi.getBaublesHandler(player).getStackInSlot(0).hasTagCompound()) {
                 itemStack = BaublesApi.getBaublesHandler(player).getStackInSlot(0);
@@ -184,7 +187,7 @@ public class Pendant_Core extends BaubleBSUContainer {
     // This is a fun method which allows us to run some code when our item is
     // shown in a creative tab.
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List itemList)
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> itemList)
     {
         ItemStack itemStack = new ItemStack(item);
         this.setBSUStored(itemStack, 0);

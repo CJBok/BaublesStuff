@@ -16,41 +16,32 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class BlockRegister {
+public class BlockRegister
+{
 
-    public static Block UpgradeExtractor;
-    public static Block BlockExpGenerator;
-    public static Block BlockBookGenerator;
-
-    private static void registerBlock(Block block, ItemBlock itemBlock) {
-        GameRegistry.register(block);
-        itemBlock.setRegistryName(block.getRegistryName());
-        GameRegistry.register(itemBlock);
+    public static final Block UpgradeExtractor = new UpgradeExtractor();
+    public static final Block BlockExpGenerator = new BlockExpGenerator();
+    public static final Block BlockBookGenerator = new BlockBookGenerator();
+    
+    @SubscribeEvent
+    public void registerBlock(RegistryEvent.Register<Block> event)
+    {
+    	event.getRegistry().register(UpgradeExtractor.setRegistryName(ModInfo.MODID, "upgradeextractor").setUnlocalizedName("upgradeextractor"));
+    	event.getRegistry().register(BlockExpGenerator.setRegistryName(ModInfo.MODID, "experiencegenerator").setUnlocalizedName("experiencegenerator"));
+    	event.getRegistry().register(BlockBookGenerator.setRegistryName(ModInfo.MODID, "bookgenerator").setUnlocalizedName("bookgenerator"));
     }
 
-    private static void registerRender(Block block) {
+    private static void registerRender(Block block)
+    {
         Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), 0, new ModelResourceLocation(
                 ModInfo.MODID + ":" + block.getUnlocalizedName().substring(5), "inventory"));
     }
 
-    public static void init() {
-        UpgradeExtractor = new UpgradeExtractor();
-        ItemBlock itemUpgradeExtractor = new ItemBlock(UpgradeExtractor);
-        registerBlock(UpgradeExtractor, itemUpgradeExtractor);
-
-        BlockExpGenerator = new BlockExpGenerator();
-        ItemBlock itemBlockExpGenerator = new ItemBlock(BlockExpGenerator);
-        registerBlock(BlockExpGenerator, itemBlockExpGenerator);
-
-        BlockBookGenerator = new BlockBookGenerator();
-        ItemBlock itemBlockBookGenerator = new ItemBlock(BlockBookGenerator);
-        registerBlock(BlockBookGenerator, itemBlockBookGenerator);
-    }
-
-    public static void registerRenders() {
+    public static void registerRenders()
+    {
         registerRender(UpgradeExtractor);
         registerRender(BlockExpGenerator);
         registerRender(BlockBookGenerator);

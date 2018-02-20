@@ -54,7 +54,7 @@ public class MessageGenerator implements IMessage, IMessageHandler<MessageGenera
     @Override
     public IMessage onMessage(MessageGenerator message, MessageContext ctx) {
 
-        TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(message.pos);
+        TileEntity tileEntity = FMLClientHandler.instance().getClient().world.getTileEntity(message.pos);
 
         if (tileEntity instanceof TEExpGenerator) {
             ((TEExpGenerator) tileEntity).setBsuStored(message.bsu);

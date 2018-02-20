@@ -32,31 +32,32 @@ import net.minecraftforge.common.util.Constants;
 public class UpgradeExtractor extends BlockContainer {
     public UpgradeExtractor() {
         super(Material.ROCK);
-        this.setUnlocalizedName("UpgradeExtractor");
-        this.setRegistryName("UpgradeExtractor");
         this.setCreativeTab(CreativeTab.tabBaublesStuff);
         this.setHardness(1.0F);
     }
 
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-        boolean statement = false;
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    	final ItemStack heldItem = player.getHeldItem(hand);
+        
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
+        
         if (heldItem != null && heldItem.getItem() instanceof IBauble && heldItem.hasTagCompound()) {
             if (heldItem.hasTagCompound() && heldItem.getItem() instanceof BaubleBSUContainer) {
                 if (!world.isRemote)
                     for (int i = 0; i < heldItem.getTagCompound().getTagList("ItemStacksInBauble", Constants.NBT.TAG_COMPOUND).tagCount(); i++)
-                        world.spawnEntityInWorld(new EntityItem(world, x, y, z, ItemStack.loadItemStackFromNBT(heldItem.getTagCompound().getTagList("ItemStacksInBauble", Constants.NBT.TAG_COMPOUND).getCompoundTagAt(i))));
+                        world.spawnEntity(new EntityItem(world, x, y, z, new ItemStack(heldItem.getTagCompound().getTagList("ItemStacksInBauble", Constants.NBT.TAG_COMPOUND).getCompoundTagAt(i))));
                 int energy = ((BaubleBSUContainer) player.getHeldItemMainhand().getItem()).getBSUStored(player.getHeldItemMainhand());
-                ItemStack itemStack = new ItemStack(player.getHeldItemMainhand().getItem(), player.getHeldItemMainhand().stackSize, player.getHeldItemMainhand().getItemDamage());
+                ItemStack itemStack = new ItemStack(player.getHeldItemMainhand().getItem(), player.getHeldItemMainhand().getMaxStackSize(), player.getHeldItemMainhand().getItemDamage());
                 ((BaubleBSUContainer) itemStack.getItem()).setBSUStored(itemStack, energy);
                 itemStack.getItem().getDurabilityForDisplay(itemStack);
                 player.inventory.setInventorySlotContents(player.inventory.currentItem, itemStack);
-                statement = true;
+                return true;
             }
         }
-        return statement;
+        return true;
     }
 
     @Override

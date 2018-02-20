@@ -20,6 +20,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.Constants;
@@ -122,25 +124,41 @@ public class RecipeBeltCore implements IRecipe {
             for (int i = 0; i < inventory.getSizeInventory(); i++)
                 if (inventory.getStackInSlot(i) != null && !(inventory.getStackInSlot(i).getItem() instanceof Belt_Core)) {
                     ItemStack is1 = inventory.getStackInSlot(i).copy();
-                    is1.stackSize = 1;
+                    is1.setCount(1);
                     addItemStackToBauble(currentStack, is1);
                 }
         return currentStack;
     }
 
-    @Override
-    public int getRecipeSize() {
-        return 9;
-    }
 
     @Override
     public ItemStack getRecipeOutput() {
-        return null;
+    	return new ItemStack(ItemsAndUpgrades.Belt_Core);
     }
 
     @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
+
+	@Override
+	public IRecipe setRegistryName(ResourceLocation name) {
+		return null;
+	}
+
+	@Override
+	public ResourceLocation getRegistryName() {
+		return new ResourceLocation("RecipeBeltCore");
+	}
+
+	@Override
+	public Class<IRecipe> getRegistryType() {
+		return null;
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		return true;
+	}
 
 }

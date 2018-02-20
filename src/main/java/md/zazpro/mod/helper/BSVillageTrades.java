@@ -11,6 +11,7 @@
 
 package md.zazpro.mod.helper;
 
+import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -27,7 +28,7 @@ public class BSVillageTrades {
         if (itemStack == null)
             return null;
         ItemStack itemStack2 = itemStack.copy();
-        itemStack2.stackSize = amount;
+        itemStack2.setCount(amount);
         return itemStack2;
     }
 
@@ -41,10 +42,9 @@ public class BSVillageTrades {
         }
 
         @Override
-        public void modifyMerchantRecipeList(MerchantRecipeList recipeList, Random random) {
+        public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random) {
             recipeList.add(new MerchantRecipe(copyStackWithAmount(this.itemBuy, this.amount.getPrice(random)), Items.EMERALD));
         }
-
     }
 
     public static class ItemstackForEmerald implements EntityVillager.ITradeList {
@@ -62,7 +62,7 @@ public class BSVillageTrades {
         }
 
         @Override
-        public void modifyMerchantRecipeList(MerchantRecipeList recipeList, Random random) {
+        public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random) {
             int i = 1;
             if (this.priceInfo != null)
                 i = this.priceInfo.getPrice(random);
